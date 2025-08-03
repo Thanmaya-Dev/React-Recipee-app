@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global styles */
+body {
+  margin: 0;
+  /* The Inter font is loaded via CDN in index.html, so it's applied here */
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Background color is set via Tailwind classes in App.jsx's main div */
+}
+
+/* You can add any other custom global CSS rules here if needed */
