@@ -4,7 +4,7 @@ import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, si
 import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-// --- Firebase Context for easy access ---
+
 const FirebaseContext = createContext(null);
 
 const FirebaseProvider = ({ children }) => {
@@ -14,10 +14,10 @@ const FirebaseProvider = ({ children }) => {
   const [storage, setStorage] = useState(null);
   const [user, setUser] = useState(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
-  const [projectId, setProjectId] = useState(null); // State to store projectId for context
+  const [projectId, setProjectId] = useState(null); 
 
   useEffect(() => {
-    // DIRECTLY USE YOUR FIREBASE CONFIG HERE
+    
     const firebaseConfig = {
       apiKey: "AIzaSyDxGpNGYFtPXbK2-XKBgtw5rFRt7HQ_3EY",
       authDomain: "sample-59e1e.firebaseapp.com",
@@ -27,13 +27,13 @@ const FirebaseProvider = ({ children }) => {
       appId: "1:674409452019:web:a230ed4740c8ef61f14286"
     };
 
-    // Store projectId in state so it can be passed through context
-    setProjectId(firebaseConfig.projectId);
     
-    // In a non-Canvas environment, initialAuthToken is typically null
-    const initialAuthToken = null; 
+    setProjectId(firebaseConfig.projectId);// Store projectId in state so it can be passed through context
+    
+    
+    const initialAuthToken = null; //In a non-Canvas environment,initialAuthToken is typically null
 
-    // Initialize Firebase
+    
     const app = initializeApp(firebaseConfig);
     const authInstance = getAuth(app);
     const dbInstance = getFirestore(app);
@@ -44,7 +44,7 @@ const FirebaseProvider = ({ children }) => {
     setDb(dbInstance);
     setStorage(storageInstance);
 
-    // Sign in with custom token or anonymously
+    
     const signInUser = async () => {
       try {
         if (initialAuthToken) {
@@ -59,7 +59,7 @@ const FirebaseProvider = ({ children }) => {
       }
     };
 
-    // Set up auth state change listener
+  
     const unsubscribe = onAuthStateChanged(authInstance, (currentUser) => {
       setUser(currentUser);
       if (loadingAuth) setLoadingAuth(false);
@@ -67,7 +67,6 @@ const FirebaseProvider = ({ children }) => {
 
     signInUser();
 
-    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
 
@@ -86,7 +85,7 @@ const FirebaseProvider = ({ children }) => {
   );
 };
 
-// --- Auth Components ---
+
 const Auth = () => {
   const { auth, user } = useContext(FirebaseContext);
   const [email, setEmail] = useState('');
@@ -172,9 +171,9 @@ const Auth = () => {
   );
 };
 
-// --- Add Recipe Component ---
+
 const AddRecipe = () => {
-  const { db, storage, user, projectId } = useContext(FirebaseContext); // Get projectId from context
+  const { db, storage, user, projectId } = useContext(FirebaseContext); 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [ingredients, setIngredients] = useState('');
@@ -220,10 +219,9 @@ const AddRecipe = () => {
     }
 
     try {
-      // Use projectId from context for the collection path
+      
       const recipesCollectionRef = collection(db, `artifacts/${projectId}/public/data/recipes`); 
-      // If you're NOT using the 'artifacts/{appId}/public/data/' pathing,
-      // change it to: const recipesCollectionRef = collection(db, 'recipes');
+    
 
       await addDoc(recipesCollectionRef, {
         name,
@@ -240,7 +238,7 @@ const AddRecipe = () => {
         createdAt: serverTimestamp(),
       });
       setSuccess('Recipe added successfully!');
-      // Clear form
+      
       setName('');
       setDescription('');
       setIngredients('');
@@ -250,7 +248,7 @@ const AddRecipe = () => {
       setServings('');
       setCategory('');
       setImageFile(null);
-      if (e.target.image) e.target.image.value = ''; // Clear file input
+      if (e.target.image) e.target.image.value = ''; 
     } catch (err) {
       setError('Failed to add recipe: ' + err.message);
     } finally {
@@ -359,9 +357,9 @@ const AddRecipe = () => {
   );
 };
 
-// --- View Recipes Component ---
+
 const ViewRecipes = () => {
-  const { db, projectId } = useContext(FirebaseContext); // Get projectId from context
+  const { db, projectId } = useContext(FirebaseContext); 
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -371,10 +369,10 @@ const ViewRecipes = () => {
       try {
         setLoading(true);
         setError('');
-        // Using projectId from context for the collection path
+        
         const recipesCollectionRef = collection(db, `artifacts/${projectId}/public/data/recipes`); 
-        // If you're NOT using the 'artifacts/{appId}/public/data/' pathing,
-        // change it to: const recipesCollectionRef = collection(db, 'recipes');
+        
+        
         
         const q = query(recipesCollectionRef, orderBy('createdAt', 'desc')); 
         const querySnapshot = await getDocs(q);
@@ -390,10 +388,10 @@ const ViewRecipes = () => {
       }
     };
 
-    if (db && projectId) { // Ensure db and projectId are available before fetching
+    if (db && projectId) { 
       fetchRecipes();
     }
-  }, [db, projectId]); // Add projectId to dependency array
+  }, [db, projectId]); 
 
   if (loading) {
     return <div className="text-center text-gray-400 p-8">Loading recipes...</div>;
@@ -445,9 +443,9 @@ const ViewRecipes = () => {
   );
 };
 
-// --- Main App Component ---
+
 const App = () => {
-  const [currentPage, setCurrentPage] = useState('home'); // 'home', 'add-recipe', 'view-recipes'
+  const [currentPage, setCurrentPage] = useState('home'); 
   const { user } = useContext(FirebaseContext);
 
   return (
@@ -518,7 +516,7 @@ const App = () => {
   );
 };
 
-// Wrap the App with FirebaseProvider
+
 const RootApp = () => (
   <FirebaseProvider>
     <App />
